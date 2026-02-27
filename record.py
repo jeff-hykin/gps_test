@@ -6,6 +6,8 @@ Usage:
     uv run python record.py                         # auto-detect port
     uv run python record.py --port /dev/cu.usbserial-0001
     uv run python record.py --port /dev/cu.usbserial-0001 --output track.yaml
+    uv run python record.py --duration 10           # stop after 10 minutes
+    uv run python record.py --duration 0.5          # stop after 30 seconds
     uv run python record.py --count 50              # stop after 50 fixes
 
 The BU-353N transmits NMEA 0183 at 4800 baud. This script uses $GPRMC and
@@ -17,7 +19,7 @@ import argparse
 import datetime
 import glob
 import sys
-import time
+import time as _time
 
 import pynmea2
 import serial
@@ -67,6 +69,7 @@ def parse_args():
     p.add_argument("--baud", type=int, default=DEFAULT_BAUD)
     p.add_argument("--output", default=DEFAULT_OUTPUT, help=f"Output YAML file (default: {DEFAULT_OUTPUT})")
     p.add_argument("--count", type=int, default=0, help="Stop after N fixes (0 = run forever, Ctrl-C to stop)")
+    p.add_argument("--duration", type=float, default=0.0, metavar="MINUTES", help="Stop after this many minutes (0 = run forever)")
     return p.parse_args()
 
 
@@ -86,8 +89,14 @@ def main():
 
     fixes_recorded = 0
     pending_gga: dict | None = None  # last $GPGGA/$GNGGA extras
+    deadline = _time.monotonic() + args.duration * 60 if args.duration else None
 
-    print("Waiting for GPS fix … (Ctrl-C to stop)")
+    stop_reason = f"Ctrl-C to stop"
+    if args.duration:
+        stop_reason = f"stopping after {args.duration:g} min, Ctrl-C to stop early"
+    elif args.count:
+        stop_reason = f"stopping after {args.count} fixes, Ctrl-C to stop early"
+    print(f"Waiting for GPS fix … ({stop_reason})")
     try:
         while True:
             raw = ser.readline()
@@ -159,6 +168,10 @@ def main():
 
             if args.count and fixes_recorded >= args.count:
                 print(f"Reached {args.count} fixes — stopping.")
+                break
+
+            if deadline and _time.monotonic() >= deadline:
+                print(f"Reached {args.duration:g} min — stopping.")
                 break
 
     except KeyboardInterrupt:

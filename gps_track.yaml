@@ -50,3 +50,29 @@
   course_deg: null
   altitude_m: 93.3
   num_sats: 11
+- timestamp: '2026-02-27T17:35:16Z'
+  lat: 30.60904167
+  lon: -96.31836167
+  speed_knots: 0.02
+  course_deg: null
+- timestamp: '2026-02-27T17:35:17Z'
+  lat: 30.60904
+  lon: -96.31836167
+  speed_knots: 0.02
+  course_deg: null
+  altitude_m: 91.2
+  num_sats: 11
+- timestamp: '2026-02-27T17:35:18Z'
+  lat: 30.60904
+  lon: -96.31836167
+  speed_knots: 0.02
+  course_deg: null
+  altitude_m: 91.2
+  num_sats: 11
+- timestamp: '2026-02-27T17:35:19Z'
+  lat: 30.60903833
+  lon: -96.31836167
+  speed_knots: 0.01
+  course_deg: null
+  altitude_m: 91.1
+  num_sats: 11
