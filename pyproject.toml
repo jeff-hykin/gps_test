@@ -7,4 +7,5 @@ dependencies = [
     "pynmea2>=1.19",
     "pyyaml>=6.0",
     "matplotlib>=3.7",
+    "folium>=0.17",
 ]
